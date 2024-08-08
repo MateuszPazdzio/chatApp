@@ -24,7 +24,9 @@ namespace chat.Server.Data
 
             modelBuilder.Entity<Chat>()
                 .HasMany<Message>(c => c.Messages);
-                
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.User);
         }
     }
 }

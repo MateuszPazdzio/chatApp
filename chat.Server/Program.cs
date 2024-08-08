@@ -41,7 +41,15 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton<AuthenticationSettings>(authenticationSettings);
 
-
+builder.Services.AddSignalR();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin",
+        builder => builder.AllowAnyOrigin() // Update with your Angular app URL
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          );
+});
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -71,6 +79,7 @@ var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseCors("AllowOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -87,5 +96,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
-
+app.MapHub<ChatHub>("/services");
+//app.UseCors();
 app.Run();
