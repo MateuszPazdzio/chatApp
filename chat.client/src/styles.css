@@ -8,3 +8,45 @@
 .userNameFromProposedList:hover{
     background-color:lightyellow;
 }
+
+
+  .chatArea .chat {
+    height: 380px;
+    max-width:320px;
+    border:1px solid #000;
+  }
+    .chatArea .chat .body .messageArea {
+      padding:3px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  .chatArea .chat .head{
+      height:40px;
+  }
+
+  .chatArea .chat .body .inputArea {
+    z-index: 1;
+    height: 40px;
+    display:flex;
+    align-items:end;
+  }
+    .chatArea .chat .body .inputArea .input-control {
+      width: 300px;
+    }
+  .chatHead {
+    border-bottom: 1px solid #000;
+  }
+
+  .message .msgText {
+    background-color: dodgerblue;
+    color: #fff;
+    border-radius: 4px;
+    padding: 4px;
+    line-height: 17px;
+    max-width: 210px;
+    word-break:break-word
+  }
+
+  .chat .head .title {
+    line-height: 14px;
+  }

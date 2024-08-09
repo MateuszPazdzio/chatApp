@@ -1,2 +1,32 @@
 <app-search-user (createChat)="createChat($event)"></app-search-user>
-<p>chat works!</p>
+
+<div class="container">
+  <div class="chatArea" #chatArea>
+    <div class="chat" id="chat1">
+      <div class="head d-flex justify-content-between chatHead">
+        <div class="title col">
+          <p class="text">Mateusz Paździoffffffffffffffffffff</p>
+        </div>
+        <div class="closeBtn">
+          <button class="btn btn-dark" type="button">X</button>
+        </div>
+      </div>
+      <div class="body">
+        <div class="messageArea d-flex flex-column">
+
+
+        </div>
+
+        <div class="inputArea form-group">
+          <input class="input-control" type="text" name="message" placeholder="Message.." />
+          <input class="btn btn-primary" type="button" name="sendingBtn" value=">" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="message d-flex justify-content-start">
+  <p class="msgText">Text message</p>
+</div>
