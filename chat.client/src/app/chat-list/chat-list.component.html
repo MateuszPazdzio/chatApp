@@ -1,0 +1,13 @@
+<app-search-list (createChat)="createChat($event)"></app-search-list>
+
+<div class="container">
+  <div class="chatArea d-flex flex-wrap" #chatArea>
+
+
+    <app-chat (remove)="removeChat($event)" *ngFor="let chat of chats" [chat]="chat">
+
+    </app-chat>
+
+
+  </div>
+</div>

@@ -1,4 +1,6 @@
-import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, Renderer2, ViewChild } from '@angular/core';
+import { ChatBuilderService } from '../services/chat-builder.service';
+import { Chat } from '../models/User';
 
 @Component({
   selector: 'app-chat',
@@ -7,13 +9,14 @@ import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 })
 export class ChatComponent {
 
-  @ViewChild("chatArea") elRef! : ElementRef
-  constructor(private renderer: Renderer2) {
+
+  @Output() remove: EventEmitter<any> = new EventEmitter()
+  @Input() chat!:Chat
+  constructor(private renderer:Renderer2) {
 
   }
 
-
-  createChat(userName: string) {
-
+  removeChat() {
+    this.remove.emit(this.chat);
   }
 }

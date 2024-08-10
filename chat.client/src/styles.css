@@ -9,15 +9,18 @@
     background-color:lightyellow;
 }
 
-
-  .chatArea .chat {
-    height: 380px;
-    max-width:320px;
-    border:1px solid #000;
-  }
+.chatArea{
+    max-width:400vh;
+}
+.chatArea .chat {
+  height: 380px;
+  max-width: 320px;
+  border: 1px solid #000;
+}
     .chatArea .chat .body .messageArea {
       padding:3px;
       max-height: 300px;
+      min-height: 290px;
       overflow-y: auto;
     }
   .chatArea .chat .head{
@@ -32,6 +35,11 @@
   }
     .chatArea .chat .body .inputArea .input-control {
       width: 300px;
+      height:40px;
+      border-bottom:0;
+      border-right:0;
+      border-left:0;
+      border-top:1px, solid #000;
     }
   .chatHead {
     border-bottom: 1px solid #000;

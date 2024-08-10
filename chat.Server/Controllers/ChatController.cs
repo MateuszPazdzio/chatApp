@@ -1,6 +1,7 @@
 ﻿using chat.Server.models;
 using chat.Server.services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace chat.Server.Controllers
 {
@@ -24,12 +25,27 @@ namespace chat.Server.Controllers
 
         //    return Ok(result);
         //}
+        [HttpPost("chat/messages")]
+        public async Task<IActionResult> GetMessagesFromChat([FromBody] SearchResult searchResult)
+        {
+            if (searchResult==null || searchResult.Users.Count == 0)
+            {
+                return NotFound();
+            }
 
+            var messages = _chatService.GetChatMessages(searchResult);
+            if(messages == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(messages);
+        }
         [HttpGet("chat")]
         [ActionName("getProposedUsersByUserName")]
-        public async Task<IActionResult> GetProposedUsersByUserName([FromQuery] string userName)
+        public async Task<IActionResult> GetProposedChatConversationsBySearchInput([FromQuery] string searchPhrase)
         {
-            var result = await _chatService.GetSimilarUsers(userName);
+            var result = await _chatService.GetProposedChatConversationsBySearchInput(searchPhrase);
             if (result == null)
             {
                 return NotFound();

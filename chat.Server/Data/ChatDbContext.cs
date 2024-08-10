@@ -8,6 +8,7 @@ namespace chat.Server.Data
     {
         public virtual DbSet<Chat> Chats { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Message> Messages{ get; set; }
 
         public ChatDbContext()
         {
@@ -27,6 +28,7 @@ namespace chat.Server.Data
 
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.User);
+
         }
     }
 }
