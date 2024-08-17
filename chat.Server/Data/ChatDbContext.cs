@@ -19,6 +19,9 @@ namespace chat.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<User>()
+                .Ignore(u => u.Password);
+
             modelBuilder.Entity<Chat>()
                 .HasMany<User>(c => c.Users)
                 .WithMany(u => u.Chats);

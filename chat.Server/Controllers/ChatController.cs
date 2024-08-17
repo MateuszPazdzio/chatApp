@@ -1,5 +1,6 @@
 ﻿using chat.Server.models;
 using chat.Server.services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
 

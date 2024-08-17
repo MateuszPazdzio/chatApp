@@ -16,6 +16,11 @@ namespace chat.Server.services
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ChatDbContext _context;
+        Dictionary<string, Func<User, string>> searchByDict = new Dictionary<string, Func<User, string>>()
+            {
+                {"userName",user=>user.UserName},
+                {"email",user=>user.Email},
+            };
         public UserService(ChatDbContext context, IPasswordHasher<User> passwordHasher,
             UserManager<User> userManager, SignInManager<User> signInManager, AuthenticationSettings authenticationSettings,
             IUserHttpContext userHttpContext) : base(context) 
@@ -26,51 +31,59 @@ namespace chat.Server.services
             this._userManager = userManager;
             this._signInManager = signInManager;
         }
-        public async Task<Status> CreateUser(User user)
+        public async Task<RegisterResponse> CreateUser(User user)
         {
-            var status = new Status();
-            //var userExists = await _userManager.FindByNameAsync(user.UserName);
-            var userExists = await _userManager.FindByNameAsync(user.Email);
-            if (userExists != null)
+            var response = new RegisterResponse();
+
+            var userName = await _userManager.FindByNameAsync(user.UserName);
+            if (userName != null)
             {
-                status.Code = Code.HTTP400;
-                status.Message = "User already exist";
-                return status;
+                response.IsRegistered = false;
+                response.ResponseMessage = $"Username {user.UserName} already exist";
+                return response;
             }
+
+            var userEmail = await _context.Users.FirstOrDefaultAsync(u=>u.Email==user.Email);
+            if (userEmail != null)
+            {
+                response.ResponseMessage = $"Email {user.Email} already exist";
+                response.IsRegistered = false;
+                return response;
+            }
+
             var result = await _userManager.CreateAsync(user, user.Password);
             if (!result.Succeeded)
             {
-                status.Code = Code.HTTP400;
-                status.Message = "User creation failed";
-                return status;
+                response.IsRegistered = false;
+                response.ResponseMessage = String.Join("\n",result.Errors.ToList().Select(e=>e.Description));
+                return response;
             }
 
             //await _userManager.AddToRoleAsync(user, "Member");
-
-            status.Code = Code.HTTP201;
-            status.Message = "You have registered successfully";
-            return status;
+            response.IsRegistered = true;
+            response.ResponseMessage = "You have registered successfully";
+            return response;
         }
 
-        public async Task<Status> LoginUser(User user)
+        public async Task<LoginResponse> LoginUser(User user)
 
         {
-            var status = new Status();
+            var response = new LoginResponse();
             var userFound = await _userManager.FindByNameAsync(user.UserName);
 
             if (user == null)
             {
-                status.Code = Code.HTTP400;
-                status.Message = "Invalid username";
-                return status;
+                response.IsLoggedIn = false;
+                response.ResponseMessage = "Invalid username";
+                return response;
             }
 
             if (!await _userManager.CheckPasswordAsync(userFound, user.Password))
             //if (!await _userManager.CheckPasswordAsync(userFound, user.Password))
             {
-                status.Code = Code.HTTP500;
-                status.Message = "Invalid Password";
-                return status;
+                response.IsLoggedIn = false;
+                response.ResponseMessage = "Invalid Password";
+                return response;
             }
             //var signInResult = await _signInManager.PasswordSignInAsync(user, userFound.Password, false, true);
             var signInResult = await _signInManager.PasswordSignInAsync(userFound, user.Password, false, true);
@@ -86,37 +99,47 @@ namespace chat.Server.services
                 {
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
-                status.StatusCode = 1;
-                status.Message = "Logged in successfully";
+                response.IsLoggedIn = true;
+                response.ResponseMessage = "Logged in successfully";
             }
             else if (signInResult.IsLockedOut)
             {
-                status.Code = Code.HTTP500;
-                status.Message = "User is locked out";
+                response.IsLoggedIn = false;
+                response.ResponseMessage = "User is locked out";
             }
             else
             {
-                status.Code = Code.HTTP400;
-                status.Message = "Error on logging in";
+                response.IsLoggedIn = false;
+                response.ResponseMessage= "Error on logging in";
             }
 
-            return status;
+            return response;
         }
 
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();
         }
-        public async Task<Status> LoginApi(User user)
+        public async Task<LoginResponse> LoginApi(User user)
         {
             var validUser = await AuthenticateUser(user);
+            if(validUser == null)
+            {
+                return new LoginResponse()
+                {
+                    IsLoggedIn = false,
+                    Token=null,
+                    ResponseMessage= "Wrong password or login"
+                };
+            }
             var claims = await GenerateListOfClaims(validUser);
             var token = await GenerateToken(claims);
 
-            return new Status()
+            return new LoginResponse()
             {
-                StatusCode = 200,
-                Message = token.ToString()
+                IsLoggedIn = true,
+                Token = token.ToString(),
+                ResponseMessage = "Succesfully logged in"
             };
         }
         private async Task<User> AuthenticateUser(User userMapped)
@@ -126,11 +149,13 @@ namespace chat.Server.services
             if (validUser == null)
             {
                 //throw new WrongCredentialsException("Email does not exists");
+                return null;
             }
             var result = _passwordHasher.VerifyHashedPassword(validUser, validUser.PasswordHash, userMapped.Password);
             if (PasswordVerificationResult.Failed == result)
             {
-                //throw new WrongCredentialsException("Wrong password");
+                //throw new Exception("Wrong password");
+                return null;
             }
             return validUser;
         }
@@ -155,6 +180,11 @@ namespace chat.Server.services
             var tokenHandler = new JwtSecurityTokenHandler();
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public async Task<User> GetUser(string searchPhrase)
+        {
+            return await this._context.Users.FirstOrDefaultAsync(user => searchByDict[searchPhrase].Invoke(user) != null);
         }
     }
 }

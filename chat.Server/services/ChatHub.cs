@@ -11,21 +11,22 @@ namespace chat.Server.services
         {
             this.httpClientFactory = httpClientFactory;
         }
-        public async Task SendMessage(string userName, string message)
+        public async Task SendMessage(string msg)
         {
-            if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty("message"))
-            {
-                return;
-            }
+            //if (string.IsNullOrEmpty(message.User.UserName) || string.IsNullOrEmpty("message"))
+            //{
+            //    return;
+            //}
 
-            var messageObj = new Message() {
-                Value = message
-            };
+            //var messageObj = new Message() {
+            //    Value = message.Value
+            //};
 
-            var client = httpClientFactory.CreateClient();
-            await client.PostAsJsonAsync("http://localhost:7282/api/chat", messageObj);
+            //var client = httpClientFactory.CreateClient();
+            //await client.PostAsJsonAsync("http://localhost:7282/api/chat", msg);
 
-            await Clients.All.SendAsync("ReceiveMessage", userName, message);
+            await Clients.All.SendAsync("ReceiveMessage", msg);
+            //await Clients.Clients(this.Context.ConnectionId).SendAsync("ReceiveMessage", message);
         }
     }
 }

@@ -1,0 +1,43 @@
+<form [formGroup]="form" (ngSubmit)="ngSubmit()">
+  <div class="form-group">
+    <label for="username">Username:</label>
+    <input class="input-control" id="username" type="text" formControlName="username">
+    <div *ngIf="form.get('username')?.invalid && form.get('username')?.touched">
+      <small *ngIf="form.get('username')?.errors?.['required']">Username is required.</small>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email:</label>
+    <input class="input-control" id="email" type="email" formControlName="email">
+    <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+      <small *ngIf="form.get('email')?.errors?.['email']">Enter a valid email address.</small>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password:</label>
+    <input class="input-control" id="password" type="password" formControlName="password">
+    <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched">
+      <small *ngIf="form.get('password')?.errors?.['required']">Password is required.</small>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="passwordVerification">Confirm Password:</label>
+    <input class="input-control" id="passwordVerification" type="password" formControlName="passwordVerification">
+    <div *ngIf="form.get('passwordVerification')?.invalid && form.get('passwordVerification')?.touched">
+      <small *ngIf="form.get('passwordVerification')?.errors?.['required']">Password confirmation is required.</small>
+    </div>
+    <div *ngIf="form.errors?.['passwordMismatch'] && form.get('passwordVerification')?.touched">
+      <small>Passwords do not match.</small>
+    </div>
+  </div>
+  <div *ngIf="!registerResponse.isRegistered && registerResponse.responseMessage.length>0">
+    <div class="alert alert-danger">
+      <p>{{registerResponse.responseMessage}}</p>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit</button>
+</form>

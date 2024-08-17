@@ -12,15 +12,19 @@
       </div>
       <div class="body">
         <div class="messageArea d-flex flex-column">
-           <div class="message d-flex justify-content-start" *ngFor="let message of chat.messages">
+           <div  [ngClass]="{
+                  'justify-content-end': message.user.userName == authService.getCurrentUser()?.userName
+              }" class="message d-flex" *ngFor="let message of chat.messages">
              <p class="msgText">{{message.value}}</p>
            </div>
-
+          <div class="noMessagesInfo" *ngIf="chat.messages.length==0">
+            <p class="text text-secondary">You have currenlty no messages in this chat</p>
+          </div>
         </div>
 
         <div class="inputArea form-group">
-          <input class="input-control" type="text" name="message" placeholder="Message.." />
-          <input class="btn btn-primary" type="button" name="sendingBtn" value=">" />
+          <input class="input-control" type="text" name="message" placeholder="Message.." [(ngModel)]="messageInput"/>
+          <input class="btn btn-primary" (click)="sendMessage()" type="button" name="sendingBtn" value=">" />
         </div>
       </div>
     </div>

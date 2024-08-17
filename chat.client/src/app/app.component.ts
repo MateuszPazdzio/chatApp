@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from './services/auth.service';
 
 interface WeatherForecast {
   date: string;
@@ -15,7 +16,7 @@ interface WeatherForecast {
 })
 export class AppComponent implements OnInit {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService:AuthService) {}
 
   ngOnInit() {
   }

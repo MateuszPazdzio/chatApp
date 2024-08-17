@@ -8,6 +8,15 @@ namespace chat.Server.models
         public string Value { get; set; }
         [NotMapped]
         public User User { get; set; }
+        public DateTime? SendingDate { get; set; }
+        public DateTime Time { get; set; }
+    }
+    public class MessageDto
+    {
+        public int Id { get; set; }
+        public string Value { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
         public DateTime SendingDate { get; set; }
     }
 }

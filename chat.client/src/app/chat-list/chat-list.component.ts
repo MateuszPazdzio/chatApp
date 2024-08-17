@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { Chat, Message, SearchResult } from '../models/User';
+import { Chat, Message, SearchResult, User } from '../models/User';
 import { ChatService } from '../services/chat.service';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-chat-list',
@@ -11,11 +12,16 @@ import { firstValueFrom } from 'rxjs';
 export class ChatListComponent {
   chats: Chat[] =[]
 
-  constructor(private chatService: ChatService) {
-
+  constructor(private chatService: ChatService, private authService:AuthService) {
+    this.authService.initialize();
   }
-  async getMessages(searchResult: SearchResult) :Promise<Message[]>{
+  async getMessages(searchResult: SearchResult): Promise<Message[]>{
+    searchResult.name = searchResult.users.length > 2 ? searchResult.name : null
     try {
+      const userLoggedIn: User | undefined = this.authService.getCurrentUser();
+      if (userLoggedIn != undefined) {
+        searchResult.users.push(userLoggedIn)
+      }
       const messages: Message[] = await firstValueFrom(this.chatService.getMessagesFromChat(searchResult));
       return messages;
     } catch (error) {
@@ -37,11 +43,10 @@ export class ChatListComponent {
         return;
       }
     }
-
     this.chats.push({
       name: searchResult.name,
       users: searchResult.users,
-      messages:await this.getMessages(searchResult)
+      messages: await this.getMessages(searchResult)
       //messages: [{
       //  time: new Date(),
       //  user: {
@@ -50,6 +55,6 @@ export class ChatListComponent {
       //  },
       //  value:"test msg"
       //}]
-    })
+    });
     }
 }

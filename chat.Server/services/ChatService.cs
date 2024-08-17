@@ -45,7 +45,7 @@ namespace chat.Server.services
 
 
             var emailTable = new DataTable();
-            usersEmails.Add("string");
+            //usersEmails.Add("string");
             emailTable.Columns.Add("Value", typeof(string));
 
             foreach (var email in usersEmails)
@@ -60,7 +60,7 @@ namespace chat.Server.services
                 Value = emailTable
             };
 
-            var chatNameParameter = new SqlParameter("@ChatName", searchResult.Name);
+            var chatNameParameter = new SqlParameter("@ChatName", searchResult.Name ?? (object)DBNull.Value);
             parameterList.Add(emailParameter);
             parameterList.Add(chatNameParameter);
             IEnumerable<Message> messages;
@@ -69,7 +69,18 @@ namespace chat.Server.services
                 //messages =  _chatDbContext.Database.SqlQueryRaw<Message>("EXEC GetMessagesFromChat @EmailList, @ChatName ",
                 //    parameterList.ToArray()
                 //);
-                messages = _chatDbContext.Database.SqlQuery<Message>($"EXEC GetMessagesFromChat {emailParameter}, {chatNameParameter}").ToList();
+                messages = _chatDbContext.Database.SqlQuery<MessageDto>($"EXEC GetMessagesFromChat {emailParameter}, {chatNameParameter}").AsEnumerable()
+                    .Select(reader=>new Message()
+                    {
+                        Id = reader.Id,
+                        SendingDate=reader.SendingDate,
+                        Value = reader.Value,
+                        User=new User()
+                        {
+                            Email = reader.Email,
+                            UserName=reader.UserName
+                        }
+                    }).ToList();
 
             }
             catch (Exception)

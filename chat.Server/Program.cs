@@ -41,14 +41,20 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton<AuthenticationSettings>(authenticationSettings);
 
-builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",
-        builder => builder.AllowAnyOrigin() // Update with your Angular app URL
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          );
+        builder =>
+        {
+            builder.WithOrigins("https://localhost:4200") // Your Angular app URL
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials(); // Allow credentials
+        });
+});
+builder.Services.AddSignalR(e =>
+{
+    e.MaximumReceiveMessageSize = 1024000000000000000;
 });
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -96,6 +102,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
-app.MapHub<ChatHub>("/services");
+app.MapHub<ChatHub>("/chatHub"); ;
 //app.UseCors();
 app.Run();

@@ -20,11 +20,12 @@ namespace chat.Server.Controllers
         }
         [HttpPost]
         [Route("auth/login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserDtoApi loginUserDtoApi)
+        public async Task<LoginResponse> Login([FromBody] LoginUserDtoApi loginUserDtoApi)
         {
             var loginUser = _mapper.Map<User>(loginUserDtoApi);
-            var status = await this._userRepository.LoginApi(loginUser);
-            return Ok(status);
+            var loginResponse = await this._userRepository.LoginApi(loginUser);
+            return loginResponse;
+
         }
         [HttpPost]
         [Route("auth/register")]
@@ -37,10 +38,30 @@ namespace chat.Server.Controllers
 
         [HttpPost]
         [Route("auth/logout")]
-        public async Task<IActionResult> Logut([FromBody] RegisterUserDtoApi registerUserDto)
+        public async Task<IActionResult> Logut()
         {
             await _userRepository.LogoutAsync();
             return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet]
+        [Route("auth/user")]
+        public async Task<bool> CheckIfUserWithSpecificEmailOrUserNameExists([FromQuery] string searchPhrase)
+        {
+            //var user = await this._userRepository.GetUser(searchPhrase);
+            //if(user == null)
+            //{
+            //    return new Status()
+            //    {
+            //        Code = Code.HTTP400,
+            //    };
+            //}
+
+            //return new Status()
+            //{
+            //    Code = Code.HTTP200,
+            //};
+            throw new NotImplementedException();
         }
     }
 }

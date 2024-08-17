@@ -12,7 +12,7 @@ using chat.Server.Data;
 namespace chat.Server.Migrations
 {
     [DbContext(typeof(ChatDbContext))]
-    [Migration("20240806190100_Init")]
+    [Migration("20240816095041_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -185,7 +185,6 @@ namespace chat.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -207,6 +206,10 @@ namespace chat.Server.Migrations
                     b.Property<DateTime>("SendingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -215,7 +218,9 @@ namespace chat.Server.Migrations
 
                     b.HasIndex("ChatId");
 
-                    b.ToTable("Message");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("chat.Server.models.User", b =>
@@ -247,10 +252,6 @@ namespace chat.Server.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -258,10 +259,6 @@ namespace chat.Server.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -279,6 +276,7 @@ namespace chat.Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -366,6 +364,14 @@ namespace chat.Server.Migrations
                     b.HasOne("chat.Server.models.Chat", null)
                         .WithMany("Messages")
                         .HasForeignKey("ChatId");
+
+                    b.HasOne("chat.Server.models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("chat.Server.models.Chat", b =>

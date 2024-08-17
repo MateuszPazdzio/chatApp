@@ -18,6 +18,7 @@ export class SearchListComponent {
 
   sendToChatComponent(searchResult:any) {
     this.createChat.emit(searchResult);
+    this.searchResults=[]
   }
 
   onKeyUp(key: Event): void {
@@ -61,7 +62,5 @@ export class SearchListComponent {
         }
       )
     }
-
-
   }
 }
