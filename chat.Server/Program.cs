@@ -9,6 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders(); // Optionally clear existing providers
+builder.Logging.AddConsole(); // Add console logging
+builder.Logging.SetMinimumLevel(LogLevel.Debug); // Set the minimum log level to Debug
 
 // Add services to the container.
 
@@ -55,6 +58,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddSignalR(e =>
 {
     e.MaximumReceiveMessageSize = 1024000000000000000;
+    e.EnableDetailedErrors = true;
 });
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -64,11 +68,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(UserProfile));
 
 
-
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IUserHttpContext, UserHttpContext>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddSingleton<ChatHub>();
 
 
 builder.Services.ConfigureApplicationCookie(options =>

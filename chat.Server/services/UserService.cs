@@ -151,12 +151,21 @@ namespace chat.Server.services
                 //throw new WrongCredentialsException("Email does not exists");
                 return null;
             }
-            var result = _passwordHasher.VerifyHashedPassword(validUser, validUser.PasswordHash, userMapped.Password);
-            if (PasswordVerificationResult.Failed == result)
+            try
             {
-                //throw new Exception("Wrong password");
-                return null;
+                var result = _passwordHasher.VerifyHashedPassword(validUser, validUser.PasswordHash, userMapped.Password);
+
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            //if (PasswordVerificationResult.Failed == result)
+            //{
+            //    //throw new Exception("Wrong password");
+            //    return null;
+            //}
             return validUser;
         }
         private async Task<List<Claim>> GenerateListOfClaims(User validUser)

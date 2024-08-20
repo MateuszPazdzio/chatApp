@@ -5,10 +5,14 @@ export interface User {
 
 export interface Message{
   user: User
-  time: Date,
+  sendingDate: Date,
   value:string
 }
+export interface SendingMessage extends Message{
+  chatId:number
+}
 export interface Chat {
+  id:number,
   name:string|null,
   users: User[],
   messages:Message[]
@@ -17,7 +21,7 @@ export interface Chat {
 
 export interface SearchResult {
   users:User[]
-  name:string|null
+  name: string | null
 }
 
 export interface LoginUserCred {
@@ -54,4 +58,9 @@ export interface DecodedToken {
 export interface CurrentUser {
   user?: User,
   isAuthenticated:boolean
+}
+
+export interface ChatDetails {
+  messages: Message[],
+  chatId:number
 }

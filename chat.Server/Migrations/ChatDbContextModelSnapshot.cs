@@ -197,10 +197,10 @@ namespace chat.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ChatId")
+                    b.Property<int>("ChatId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("SendingDate")
+                    b.Property<DateTime?>("SendingDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
@@ -360,7 +360,9 @@ namespace chat.Server.Migrations
                 {
                     b.HasOne("chat.Server.models.Chat", null)
                         .WithMany("Messages")
-                        .HasForeignKey("ChatId");
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("chat.Server.models.User", "User")
                         .WithMany()

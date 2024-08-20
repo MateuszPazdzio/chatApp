@@ -34,13 +34,13 @@ export function initializeApp(authService: AuthService) {
     ReactiveFormsModule
   ],
   providers: [
-    AuthService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeApp,
-      deps: [AuthService],
-      multi: true,
-    },
+    //AuthService,
+    //{
+    //  provide: APP_INITIALIZER,
+    //  useFactory: initializeApp,
+    //  deps: [AuthService],
+    //  multi: true,
+    //},
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

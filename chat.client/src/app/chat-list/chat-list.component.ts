@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Chat, Message, SearchResult, User } from '../models/User';
+import { Chat, ChatDetails, Message, SearchResult, User } from '../models/User';
 import { ChatService } from '../services/chat.service';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
@@ -15,18 +15,19 @@ export class ChatListComponent {
   constructor(private chatService: ChatService, private authService:AuthService) {
     this.authService.initialize();
   }
-  async getMessages(searchResult: SearchResult): Promise<Message[]>{
-    searchResult.name = searchResult.users.length > 2 ? searchResult.name : null
+  async getMessagesAndChatId(searchResult: SearchResult): Promise<ChatDetails|undefined>{
     try {
       const userLoggedIn: User | undefined = this.authService.getCurrentUser();
       if (userLoggedIn != undefined) {
         searchResult.users.push(userLoggedIn)
       }
-      const messages: Message[] = await firstValueFrom(this.chatService.getMessagesFromChat(searchResult));
-      return messages;
+      //tutaj musi byc zwrot tego obiektu z chatid i messages[]
+      const chatDetails: ChatDetails = await firstValueFrom(this.chatService.getMessagesFromChatAndChatId(searchResult));
+
+      return chatDetails;
     } catch (error) {
       console.error('Error fetching messages', error);
-      return []; // or handle the error as appropriate
+      return undefined; // or handle the error as appropriate
     }
   }
 
@@ -36,25 +37,26 @@ export class ChatListComponent {
 
 
   async createChat(searchResult: SearchResult) {
-    if (this.chats.length > 0) {
-      let chatExists = this.chats.filter(chat => chat.name === searchResult.name);
-      if (chatExists.length > 0) {
-        alert("chat exists");
-        return;
+      if (this.chats.length > 0) {
+        let chatExists = this.chats.filter(chat => chat.name === searchResult.name);
+        if (chatExists.length > 0) {
+          alert("chat exists");
+          return;
+        }
       }
+
+      const chatDetails: ChatDetails | undefined = await this.getMessagesAndChatId(searchResult);
+    if (chatDetails != undefined) {
+
+      this.chats.push({
+        name: searchResult.name,
+        users: searchResult.users,
+        messages: chatDetails.messages,
+        id: chatDetails.chatId
+      });
     }
-    this.chats.push({
-      name: searchResult.name,
-      users: searchResult.users,
-      messages: await this.getMessages(searchResult)
-      //messages: [{
-      //  time: new Date(),
-      //  user: {
-      //    email: "mail@wp.pl",
-      //    userName: searchResult.name
-      //  },
-      //  value:"test msg"
-      //}]
-    });
+    else {
+      console.log("error while sending message")
+    }
     }
 }

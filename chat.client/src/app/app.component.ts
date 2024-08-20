@@ -16,7 +16,7 @@ interface WeatherForecast {
 })
 export class AppComponent implements OnInit {
 
-  constructor(private http: HttpClient, private authService:AuthService) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
   }

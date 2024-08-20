@@ -17,7 +17,7 @@
               }" class="message d-flex" *ngFor="let message of chat.messages">
              <p class="msgText">{{message.value}}</p>
            </div>
-          <div class="noMessagesInfo" *ngIf="chat.messages.length==0">
+          <div class="noMessagesInfo" *ngIf="chat.messages == null">
             <p class="text text-secondary">You have currenlty no messages in this chat</p>
           </div>
         </div>
