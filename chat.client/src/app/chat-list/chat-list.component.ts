@@ -3,6 +3,7 @@ import { Chat, ChatDetails, Message, SearchResult, User } from '../models/User';
 import { ChatService } from '../services/chat.service';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-chat-list',
@@ -12,7 +13,7 @@ import { AuthService } from '../services/auth.service';
 export class ChatListComponent {
   chats: Chat[] =[]
 
-  constructor(private chatService: ChatService, private authService:AuthService) {
+  constructor(private chatService: ChatService, private authService:AuthService, private messageService:MessageService) {
     this.authService.initialize();
   }
   async getMessagesAndChatId(searchResult: SearchResult): Promise<ChatDetails|undefined>{
@@ -45,8 +46,12 @@ export class ChatListComponent {
         }
       }
 
-      const chatDetails: ChatDetails | undefined = await this.getMessagesAndChatId(searchResult);
+    const chatDetails: ChatDetails | undefined = await this.getMessagesAndChatId(searchResult);
     if (chatDetails != undefined) {
+      if (chatDetails?.messages != null) {
+        this.messageService.hubConnection?.invoke("JoinChat",chatDetails.chatId.toString())
+
+      }
 
       this.chats.push({
         name: searchResult.name,

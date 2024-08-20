@@ -61,11 +61,11 @@ namespace chat.Server.services
             // Handle disconnection: remove the user from all chat groups they are part of
             // You might want to keep track of which groups the user is part of
             // Here we're assuming you know the chatId or have stored it somewhere
-            var chatId = ...; // Retrieve the chatId for the disconnected user
-            if (chatId != null)
-            {
-                await LeaveChat(chatId);
-            }
+            //var chatId = ...; // Retrieve the chatId for the disconnected user
+            //if (chatId != null)
+            //{
+            //    await LeaveChat(chatId);
+            //}
 
             await base.OnDisconnectedAsync(exception);
         }

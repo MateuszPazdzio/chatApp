@@ -27,7 +27,7 @@ export class ChatComponent implements OnInit{
     this.messageSubscription = this.messageService.messageSubject$
       .pipe(takeUntil(this.destroy$))
       .subscribe(message => {
-        if (message) {
+        if (message && message.chatId==this.chat.id) {
           if (!this.chat.messages) {
             this.chat.messages=[]
           }
@@ -39,6 +39,12 @@ export class ChatComponent implements OnInit{
       }
     })     
   }
+  async leaveChat(chatId:string) {
+    await this.messageService.hubConnection?.invoke("LeaveChat", chatId);
+  }
+  async joinChat(chatId:string) {
+    await this.messageService.hubConnection?.invoke("JoinChat", chatId);
+}
 
   ngOnDestroy(): void {
     this.unsubscribeMessageService();
@@ -51,6 +57,7 @@ export class ChatComponent implements OnInit{
     this.remove.emit(this.chat);
     this.messageService.messageReceivedSubject.next(null)
     this.unsubscribeMessageService();
+    this.leaveChat(this.chat.id.toString())
   }
 
   private unsubscribeMessageService() {
@@ -79,6 +86,8 @@ export class ChatComponent implements OnInit{
             throw new Error("you message has not been sent.")
             return;
           }
+          this.joinChat(createdChatID.toString())
+
         }
 
         this.messageService.sendMessage({
@@ -95,4 +104,5 @@ export class ChatComponent implements OnInit{
      
     }
   }
+
 }

@@ -14,6 +14,7 @@ export class MessageService {
   constructor() {
     this.startConnection();
     this.addMessageListener();
+    this.addUserJoinListener();
   }
 
   private startConnection() {
@@ -37,7 +38,11 @@ export class MessageService {
     });
 
   }
-
+  private addUserJoinListener() {
+    this.hubConnection?.on("UserJoined", (msg: string) => {
+      console.log(msg)
+    })
+  }
   private addMessageListener() {
     this.hubConnection?.on('ReceiveMessage', (message: SendingMessage) => {
       this.messageReceivedSubject.next(message);
